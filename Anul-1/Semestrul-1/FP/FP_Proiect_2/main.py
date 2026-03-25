@@ -1,26 +1,32 @@
-from Batch.batchmode import batch_mode
-from Ui.console import main_menu
-from Tests.mainTest import main_test
+from ui.console import main_menu
+from ui.batch_mode import batch_mode
+from utils.io_utils import clear_screen
 
 
-def run():
-    pachete = []
+def start():
+    """
+    Main entry point for the Travel Agency Manager application.
+    Initializes the package list and the undo stack.
+    """
+    packages = []
     undo_list = []
 
-    flag = True
-    while flag:
-        print("1. Normal Mode")
-        print("2. Batch Mode")
-        cmd = input(":")
-        match cmd:
-            case "1":
-                main_test()
-                main_menu(pachete, undo_list)
-                flag = True
-            case "2":
-                batch_mode(pachete, undo_list)
-                flag = False
+    clear_screen()
+    print("Welcome to Travel Agency Manager v2.0")
+    print("Choose operation mode:")
+    print("1. Standard Menu Mode")
+    print("2. Batch/Command Mode")
+
+    choice = input("Choice: ").strip()
+
+    if choice == '1':
+        main_menu(packages, undo_list)
+    elif choice == '2':
+        batch_mode(packages, undo_list)
+    else:
+        print("Invalid choice. Defaulting to Menu Mode...")
+        main_menu(packages, undo_list)
 
 
-
-run()
+if __name__ == "__main__":
+    start()

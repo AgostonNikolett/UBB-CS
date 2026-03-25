@@ -1,59 +1,68 @@
-﻿from Service.service import undo
-from Ui.menu_adaugari import adaugare_pachet_menu
-from Ui.menu_cautari import cautare_pachet_menu
-from Ui.menu_filtrare import filtrare_pachete_menu
-from Ui.menu_rapoarte import rapoarte_pachete_menu
-from Ui.menu_stergeri import stergere_pachet_menu
-from Utility.utility import cls, afisare_calatorii
+﻿from ui.menus.add_menu import package_addition_menu
+from ui.menus.search_menu import package_search_menu
+from ui.menus.filter_menu import package_filtering_menu
+from ui.menus.report_menu import package_reports_menu
+from ui.menus.delete_menu import package_deletion_menu
+from service.package_service import perform_undo
+from utils.io_utils import clear_screen
+from utils.display_utils import display_all_packages
 
 
 def print_main_menu():
-    print("Meniu Pachete de călătorii:")
-    print("1. Adăugare/Modificare Pachete")
-    print("2. Ștergere Pachete")
-    print("3. Căutare Pachete")
-    print("4. Raportare Pachete")
-    print("5. Filtrare Pachete")
-    print("6. Undo")
-    print("A. Afișare Pachete")
+    """
+    Displays the primary navigation menu.
+    """
+    print("\n=== TRAVEL PACKAGE MANAGEMENT SYSTEM ===")
+    print("1. Add / Modify Packages")
+    print("2. Delete Packages")
+    print("3. Search Packages")
+    print("4. Package Reports")
+    print("5. Filter Packages")
+    print("6. Undo Last Operation")
+    print("A. Display All Packages")
     print("Q. Exit")
+    print("========================================")
 
 
-def main_menu(pachete,undo_list):
-    cls()
-    print_main_menu()
+def main_menu(packages: list, undo_list: list):
+    """
+    Main execution loop for the CLI.
+    :param packages: The shared list of travel packages.
+    :param undo_list: The stack for undo operations.
+    """
+    clear_screen()
     while True:
+        print_main_menu()
+        cmd = input("Select an option: ").strip().lower()
 
-        cmd = input(":").lower()
-        match cmd:
-            case '1':
-                cls()
-                adaugare_pachet_menu(pachete, undo_list)
-                print_main_menu()
-            case '2':
-                cls()
-                stergere_pachet_menu(pachete, undo_list)
-                print_main_menu()
-            case '3':
-                cls()
-                cautare_pachet_menu(pachete)
-                print_main_menu()
-            case '4':
-                cls()
-                rapoarte_pachete_menu(pachete)
-                print_main_menu()
-            case '5':
-                cls()
-                filtrare_pachete_menu(pachete, undo_list)
-                print_main_menu()
-            case '6':
-                pachete = undo(pachete, undo_list)
-                cls()
-                print_main_menu()
-                afisare_calatorii(pachete)
-            case 'a':
-                cls()
-                print_main_menu()
-                afisare_calatorii(pachete)
-            case 'q':
-                exit(0)
+        if cmd == '1':
+            clear_screen()
+            package_addition_menu(packages, undo_list)
+        elif cmd == '2':
+            clear_screen()
+            package_deletion_menu(packages, undo_list)
+        elif cmd == '3':
+            clear_screen()
+            package_search_menu(packages)
+        elif cmd == '4':
+            clear_screen()
+            package_reports_menu(packages)
+        elif cmd == '5':
+            clear_screen()
+            package_filtering_menu(packages, undo_list)
+        elif cmd == '6':
+            try:
+                packages = perform_undo(packages, undo_list)
+                clear_screen()
+                print("Undo successful!")
+                display_all_packages(packages)
+            except Exception as e:
+                print(f"[ERROR] {e}")
+        elif cmd == 'a':
+            clear_screen()
+            display_all_packages(packages)
+        elif cmd == 'q':
+            print("Exiting application...")
+            break
+        else:
+            print("Invalid command! Please try again.")

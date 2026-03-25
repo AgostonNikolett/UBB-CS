@@ -1,0 +1,31 @@
+# === Python ===
+# Fișiere compilate (Bytecode)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# === Mediul Virtual (Virtual Environment) ===
+# Folderul creat cu python3 -m venv .venv
+.venv/
+venv/
+ENV/
+
+# === Testare și Coverage ===
+# Fișierul de date brute generat de coverage
+.coverage
+# Folderul cu raportul HTML (generat de coverage html)
+htmlcov/
+# Rapoarte XML sau JSON (dacă sunt folosite)
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# === IDE / Editor (Opțional, dar recomandat) ===
+# Setări specifice VS Code sau PyCharm
+.vscode/
+.idea/
+
+# === Fișiere sistem sau temporare ===
+.DS_Store
+Thumbs.db
