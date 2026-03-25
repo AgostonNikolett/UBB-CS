@@ -1,0 +1,7 @@
+1;Fundamentals of Programming;Istvan Czibula
+2;Object Oriented Programming;Bazil Parv
+3;Data Structures and Algorithms;Arthur Molnar
+4;Advanced Programming Methods;Christian Sacarea
+5;Web Programming;Sergiu Vancea
+6;Computer Architecture;Gheorghe Chiorean
+7;Operating Systems;Darius Bufnea

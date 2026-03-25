@@ -1,0 +1,18 @@
+# Python bytecode (foldere inutile)
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# IDE-uri
+.idea/
+.vscode/
+*.iml
+
+# Date locale / Log-uri
+*.log
+tests/data/*.txt

@@ -1,0 +1,20 @@
+101,Fundamentals of Programming,10.0
+101,Object Oriented Programming,9.5
+102,Fundamentals of Programming,8.0
+102,Data Structures and Algorithms,7.5
+103,Advanced Programming Methods,10.0
+103,Web Programming,10.0
+104,Operating Systems,6.0
+104,Computer Architecture,7.0
+105,Fundamentals of Programming,9.0
+105,Object Oriented Programming,8.5
+106,Data Structures and Algorithms,5.0
+107,Web Programming,9.0
+108,Advanced Programming Methods,8.5
+109,Fundamentals of Programming,9.5
+110,Object Oriented Programming,10.0
+111,Computer Architecture,8.0
+112,Operating Systems,9.0
+113,Web Programming,7.0
+114,Fundamentals of Programming,6.5
+115,Object Oriented Programming,9.0
