@@ -1,89 +1,74 @@
-from utils.prints import print_persons_table
+from utils.display_utils import print_persons_table
 
 class PersonMenu:
     def __init__(self, person_service):
-        self.person_service = person_service
+        self._service = person_service
 
-    def print_person_menu(self):
-        print("\nPerson Management")
-        print("1.  Add Person")
-        print("2.  List Persons")
-        print("3.  Modify Person")
-        print("4.  Delete Person")
-        print("5.  Find Person")
-        print("RP. Add Random Persons")
-        print("Q.  Back to Main Menu")
+    def _print_menu(self):
+        print("\n--- Person Management ---")
+        print("1. Add Person")
+        print("2. List All Persons")
+        print("3. Modify Person")
+        print("4. Delete Person")
+        print("5. Find Person by ID")
+        print("6. Generate Random Persons")
+        print("B. Back to Main Menu")
 
-    def handle_person_menu(self):
+    def handle_menu(self):
         while True:
-            self.print_person_menu()
-            option = input("Choose an option: ").lower()
-            if option == "1":
-                self.handle_add_person()
-            elif option == "2":
-                self.handle_list_persons()
-            elif option == "3":
-                self.handle_update_person()
-            elif option == "4":
-                self.handle_delete_person()
-            elif option == "5":
-                self.handle_find_person()
-            elif option == "rp":
-                self.handle_add_random_persons()
-            elif option == "q":
-                break
-            else:
-                print("Invalid option. Please try again.")
+            self._print_menu()
+            option = input("Choose option: ").strip().lower()
+            if option == "1": self._handle_add()
+            elif option == "2": self._handle_list()
+            elif option == "3": self._handle_update()
+            elif option == "4": self._handle_delete()
+            elif option == "5": self._handle_find()
+            elif option == "6": self._handle_random()
+            elif option in ["b", "q"]: break
+            else: print("Invalid option.")
 
-    
-    def handle_add_person(self):
+    def _handle_add(self):
         try:
-            person_id = input("Enter Person ID: ")
-            name = input("Enter Name: ")
-            address = input("Enter Address: ")
-            self.person_service.add_person(person_id, name, address)
-            print("Person added successfully.")
-        except ValueError as e:
-            print(f"Error: {e}")
-    
-    def handle_list_persons(self):
-        persons = self.person_service.list_all_persons()
-        if not persons:
-            print("No persons found.")
-        else:
-            print_persons_table(persons)
-    
-    def handle_update_person(self):
+            p_id = input("ID: ")
+            name = input("Name: ")
+            address = input("Address: ")
+            self._service.add_person(p_id, name, address)
+            print("Success: Person added.")
+        except ValueError as e: print(f"Error: {e}")
+
+    def _handle_list(self):
+        persons = self._service.get_all_sorted_by_id()
+        if not persons: print("No persons in system.")
+        else: print_persons_table(persons)
+
+    def _handle_update(self):
         try:
-            person_id = input("Enter Person ID: ")
-            name = input("Enter Name: ")
-            address = input("Enter Address: ")
-            self.person_service.update_person(person_id, name, address)
-            print("Person updated successfully.")
+            p_id = input("Enter ID to modify: ")
+            name = input("New Name: ")
+            address = input("New Address: ")
+            self._service.update_person(p_id, name, address)
+            print("Success: Person updated.")
         except ValueError as e:
             print(f"Error: {e}")
 
-    def handle_delete_person(self):
+    def _handle_delete(self):
         try:
-            person_id = input("Enter Person ID to delete: ")
-            self.person_service.remove_person(person_id)
-            print("Person deleted successfully.")
+            p_id = input("Enter ID to delete: ")
+            self._service.remove_person(p_id)
+            print("Success: Person removed.")
         except ValueError as e:
             print(f"Error: {e}")
 
-    def handle_find_person(self):
+    def _handle_find(self):
         try:
-            person_id = input("Enter Person ID to finde: ")
-            person = self.person_service.find_person_by_id(person_id)
-            print(person)
-        except ValueError as e:
-            print(f"Error: {e}")
+            p_id = input("Enter ID to find: ")
+            person = self._service.find_by_id(p_id)
+            print(f"Found: {person}")
+        except ValueError as e: print(f"Error: {e}")
 
-    def handle_add_random_persons(self):
+    def _handle_random(self):
         try:
-            number_of_persons = int(input("Number of persons to add:"))
-            self.person_service.add_random_persons(number_of_persons)
-            print("Persons added successfully.")
-        except ValueError as e:
-            print(f"Error: {e}")
- 
+            count = int(input("How many persons to generate? "))
+            self._service.generate_random_persons(count)
+            print(f"Success: Generated {count} persons.")
+        except ValueError as e: print(f"Error: {e}")

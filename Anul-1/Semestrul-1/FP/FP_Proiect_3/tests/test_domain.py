@@ -3,165 +3,107 @@ from domain.person import Person
 from domain.event import Event
 from domain.participant import Participant
 
-class TestEvent(unittest.TestCase):
+class TestDomain(unittest.TestCase):
 
-    def setUp(self):
-        # Set up a sample event for use in multiple tests
-        self.event = Event("101", "2024-12-25", "18:00", "Christmas Party")
+    # --- Tests for Person Entity ---
 
-    def test_constructor(self):
-        self.assertEqual(self.event.get_event_id(), "101")
-        self.assertEqual(self.event.get_date(), "2024-12-25")
-        self.assertEqual(self.event.get_time(), "18:00")
-        self.assertEqual(self.event.get_description(), "Christmas Party")
-        self.assertEqual(self.event.get_participant_count(), 0)
+    def test_create_person(self):
+        """Tests the initialization and getters of Person."""
+        p = Person("p1", "Alice", "Str. Florilor 10")
+        self.assertEqual(p.get_id(), "p1")
+        self.assertEqual(p.get_name(), "Alice")
+        self.assertEqual(p.get_address(), "Str. Florilor 10")
 
-    def test_getters_and_setters(self):
-        # Test setters and getters for date
-        self.event.set_date("2024-12-31")
-        self.assertEqual(self.event.get_date(), "2024-12-31")
+    def test_person_setters(self):
+        """Tests the setter methods of Person."""
+        p = Person("p1", "Alice", "Str. Florilor 10")
+        p.set_name("Alice Brown")
+        p.set_address("Str. Primăverii 5")
+        self.assertEqual(p.get_name(), "Alice Brown")
+        self.assertEqual(p.get_address(), "Str. Primăverii 5")
 
-        # Test setters and getters for time
-        self.event.set_time("20:00")
-        self.assertEqual(self.event.get_time(), "20:00")
+    def test_person_serialization(self):
+        """Tests to_file_string, from_file_string and __str__ for Person."""
+        p = Person("p1", "Alice", "Cluj")
+        expected_str = "p1,Alice,Cluj"
+        self.assertEqual(p.to_file_string(), expected_str)
 
-        # Test setters and getters for description
-        self.event.set_description("New Year's Eve Party")
-        self.assertEqual(self.event.get_description(), "New Year's Eve Party")
+        # Test valid restoration
+        p_restored = Person.from_file_string(expected_str)
+        self.assertEqual(p_restored.get_id(), "p1")
+        self.assertEqual(p_restored.get_name(), "Alice")
 
-    def test_participant_count(self):
-        # Test incrementing participant count
-        self.event.increment_participant_count()
-        self.assertEqual(self.event.get_participant_count(), 1)
-
-        # Test decrementing participant count
-        self.event.decrement_participant_count()
-        self.assertEqual(self.event.get_participant_count(), 0)
-
-        # Ensure participant count does not go negative
-        self.event.decrement_participant_count()
-        self.assertEqual(self.event.get_participant_count(), 0)
-
-    def test_to_string(self):
-        # Test the to_string method
-        expected_string = "101,2024-12-25,18:00,Christmas Party"
-        self.assertEqual(self.event.to_string(), expected_string)
-
-    def test_from_string(self):
-        # Test the from_string static method
-        event_string = "102,2024-12-31,20:00,New Year's Eve Party"
-        event = Event.from_string(event_string)
-        self.assertEqual(event.get_event_id(), "102")
-        self.assertEqual(event.get_date(), "2024-12-31")
-        self.assertEqual(event.get_time(), "20:00")
-        self.assertEqual(event.get_description(), "New Year's Eve Party")
-        self.assertEqual(event.get_participant_count(), 0)
-
-    def test_from_string_invalid(self):
-        # Test invalid string format
+        # Test invalid restoration (ValueError)
         with self.assertRaises(ValueError):
-            Event.from_string("Invalid,string")
+            Person.from_file_string("invalid,data")
 
-    def test_str_method(self):
-        # Test the __str__ method
-        expected_output = ("Event ID: 101, Time: 18:00, Date: 2024-12-25, "
-                           "Description: Christmas Party, Participants: 0")
-        self.assertEqual(str(self.event), expected_output)
+        # Test __str__
+        self.assertIn("Alice", str(p))
+        self.assertIn("p1", str(p))
 
-    def tearDown(self):
-        # Clean up resources if needed
-        pass
+    # --- Tests for Event Entity ---
 
-class TestParticipant(unittest.TestCase):
+    def test_create_event(self):
+        """Tests the initialization and getters of Event."""
+        e = Event("e1", "2024-12-01", "18:00", "Party")
+        self.assertEqual(e.get_id(), "e1")
+        self.assertEqual(e.get_date(), "2024-12-01")
+        self.assertEqual(e.get_time(), "18:00")
+        self.assertEqual(e.get_description(), "Party")
+        self.assertEqual(e.get_participant_count(), 0)
 
-    def setUp(self):
-        # Set up a sample participant for use in multiple tests
-        self.participant = Participant("1", "101")
+    def test_event_setters(self):
+        """Tests the setter methods of Event."""
+        e = Event("e1", "2024-12-01", "18:00", "Party")
+        e.set_date("2024-12-25")
+        e.set_time("20:00")
+        e.set_description("Christmas Dinner")
+        self.assertEqual(e.get_date(), "2024-12-25")
+        self.assertEqual(e.get_description(), "Christmas Dinner")
 
-    def test_constructor(self):
-        # Test the constructor initializes attributes correctly
-        self.assertEqual(self.participant.get_person_id(), "1")
-        self.assertEqual(self.participant.get_event_id(), "101")
+    def test_event_participant_counter(self):
+        """Tests incrementing and decrementing the participant counter."""
+        e = Event("e1", "2024-12-01", "18:00", "Party")
+        e.update_participant_count(5)
+        self.assertEqual(e.get_participant_count(), 5)
 
-    def test_getters(self):
-        # Test getter methods
-        self.assertEqual(self.participant.get_person_id(), "1")
-        self.assertEqual(self.participant.get_event_id(), "101")
+        e.update_participant_count(-2)
+        self.assertEqual(e.get_participant_count(), 3)
 
-    def test_to_string(self):
-        # Test the to_string method
-        expected_string = "1,101"
-        self.assertEqual(self.participant.to_string(), expected_string)
+        # Test floor at 0 (cannot have negative participants)
+        e.update_participant_count(-10)
+        self.assertEqual(e.get_participant_count(), 0)
 
-    def test_from_string(self):
-        # Test the from_string static method
-        participant_string = "2,102"
-        participant = Participant.from_string(participant_string)
-        self.assertEqual(participant.get_person_id(), "2")
-        self.assertEqual(participant.get_event_id(), "102")
+    def test_event_serialization(self):
+        """Tests serialization and string representation for Event."""
+        e = Event("e1", "2024-05-10", "12:00", "Workshop")
+        csv_line = "e1,2024-05-10,12:00,Workshop"
+        self.assertEqual(e.to_file_string(), csv_line)
 
-    def test_from_string_invalid(self):
-        # Test invalid string format
+        e_restored = Event.from_file_string(csv_line)
+        self.assertEqual(e_restored.get_description(), "Workshop")
+
         with self.assertRaises(ValueError):
-            Participant.from_string("Invalid,string,format")
+            Event.from_file_string("not,enough,parts")
 
-    def test_str_method(self):
-        # Test the __str__ method
-        expected_output = "Person ID: 1, Event ID: 101"
-        self.assertEqual(str(self.participant), expected_output)
+        self.assertIn("Workshop", str(e))
 
-    def tearDown(self):
-        # Clean up resources if needed
-        pass
+    # --- Tests for Participant (Registration) Entity ---
 
-class TestPerson(unittest.TestCase):
+    def test_participant_logic(self):
+        """Tests the Participant link entity."""
+        part = Participant("p1", "e1")
+        self.assertEqual(part.get_person_id(), "p1")
+        self.assertEqual(part.get_event_id(), "e1")
 
-    def setUp(self):
-        # Set up a sample person for use in multiple tests
-        self.person = Person("1", "John Doe", "123 Main St")
+        csv_line = "p1,e1"
+        self.assertEqual(part.to_file_string(), csv_line)
 
-    def test_constructor(self):
-        # Test the constructor initializes attributes correctly
-        self.assertEqual(self.person.get_person_id(), "1")
-        self.assertEqual(self.person.get_name(), "John Doe")
-        self.assertEqual(self.person.get_address(), "123 Main St")
+        part_restored = Participant.from_file_string(csv_line)
+        self.assertEqual(part_restored.get_person_id(), "p1")
 
-    def test_getters(self):
-        # Test getter methods
-        self.assertEqual(self.person.get_person_id(), "1")
-        self.assertEqual(self.person.get_name(), "John Doe")
-        self.assertEqual(self.person.get_address(), "123 Main St")
-
-    def test_setters(self):
-        # Test setter methods
-        self.person.set_name("Jane Doe")
-        self.person.set_address("456 Oak St")
-        self.assertEqual(self.person.get_name(), "Jane Doe")
-        self.assertEqual(self.person.get_address(), "456 Oak St")
-
-    def test_to_string(self):
-        # Test the to_string method
-        expected_string = "1,John Doe,123 Main St"
-        self.assertEqual(self.person.to_string(), expected_string)
-
-    def test_from_string(self):
-        # Test the from_string static method
-        person_string = "2,Jane Smith,789 Elm St"
-        person = Person.from_string(person_string)
-        self.assertEqual(person.get_person_id(), "2")
-        self.assertEqual(person.get_name(), "Jane Smith")
-        self.assertEqual(person.get_address(), "789 Elm St")
-
-    def test_from_string_invalid(self):
-        # Test invalid string format
         with self.assertRaises(ValueError):
-            Person.from_string("Invalid,string")
+            Participant.from_file_string("only_one_part")
 
-    def test_str_method(self):
-        # Test the __str__ method
-        expected_output = "Person ID: 1, Name: John Doe, Address: 123 Main St"
-        self.assertEqual(str(self.person), expected_output)
-
-    def tearDown(self):
-        # Clean up resources if needed
-        pass
+        self.assertIn("p1", str(part))
+        self.assertIn("e1", str(part))

@@ -1,28 +1,26 @@
 class Participant:
-    # Constructor to initialize the participants's attributes
-    def __init__(self, person_id, event_id):
-        self.person_id = person_id
-        self.event_id = event_id
+    """Represents the link between a Person and an Event (Registration)."""
 
-    # Getter method to retrieve the person's ID
-    def get_person_id(self):
-        return self.person_id
+    def __init__(self, person_id: str, event_id: str):
+        self._person_id = person_id
+        self._event_id = event_id
 
-    # Getter method to retrieve the event's ID
-    def get_event_id(self):
-        return self.event_id
+    def get_person_id(self) -> str:
+        return self._person_id
 
-    def to_string(self):
-        """Converts the Participant object to a string suitable for saving to a file."""
-        return f"{self.person_id},{self.event_id}"
+    def get_event_id(self) -> str:
+        return self._event_id
+
+    def to_file_string(self) -> str:
+        """CSV format: person_id,event_id"""
+        return f"{self._person_id},{self._event_id}"
 
     @staticmethod
-    def from_string(participant_str):
-        """Creates a Participant object from a string."""
-        parts = participant_str.strip().split(',')
+    def from_file_string(line: str) -> 'Participant':
+        parts = line.strip().split(',')
         if len(parts) != 2:
-            raise ValueError("Invalid participant string format.")
+            raise ValueError("Invalid format for Participant data.")
         return Participant(parts[0], parts[1])
-    
-    def __str__(self):
-        return f"Person ID: {self.person_id}, Event ID: {self.event_id}"
+
+    def __str__(self) -> str:
+        return f"Person {self._person_id} is registered for Event {self._event_id}"

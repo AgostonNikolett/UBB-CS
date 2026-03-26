@@ -1,67 +1,39 @@
-import datetime
-
 class Event:
-    # Constructor to initialize the event's attributes
-    def __init__(self, event_id, date, time, description):
-        self.event_id = event_id
-        self.date = date
-        self.time = time
-        self.description = description
-        self.participant_count = 0
+    """Represents an organized event."""
 
-    # Getter method to retrieve the event's ID
-    def get_event_id(self):
-        return self.event_id
+    def __init__(self, event_id: str, date: str, time: str, description: str):
+        self._event_id = event_id
+        self._date = date
+        self._time = time
+        self._description = description
+        self._participant_count = 0
 
-    # Getter method to retrieve the event's date
-    def get_date(self):
-        return self.date
+    # Getters
+    def get_id(self) -> str: return self._event_id
+    def get_date(self) -> str: return self._date
+    def get_time(self) -> str: return self._time
+    def get_description(self) -> str: return self._description
+    def get_participant_count(self) -> int: return self._participant_count
 
-    # Getter method to retrieve the event's time
-    def get_time(self):
-        return self.time
-    
-    # Getter method to retrieve the event's description
-    def get_description(self):
-        return self.description
+    # Setters
+    def set_date(self, date: str): self._date = date
+    def set_time(self, time: str): self._time = time
+    def set_description(self, desc: str): self._description = desc
 
-    # Getter method for participant count
-    def get_participant_count(self):
-        return self.participant_count
+    def update_participant_count(self, delta: int):
+        """Updates the count of participants (positive for add, negative for remove)."""
+        self._participant_count = max(0, self._participant_count + delta)
 
-    # Setter method to update the event's date
-    def set_date(self, date):
-        self.date = date
-
-    # Setter method to update the event's time
-    def set_time(self, time):
-        self.time = time
-
-    # Setter method to update the event's description
-    def set_description(self, description):
-        self.description = description
-
-    # Method to increase participant count
-    def increment_participant_count(self):
-        self.participant_count += 1
-
-    # Method to decrease participant count
-    def decrement_participant_count(self):
-        if self.participant_count > 0:
-            self.participant_count -= 1
-
-    def to_string(self):
-        """Converts the Event object to a string suitable for saving to a file."""
-        return f"{self.event_id},{self.date},{self.time},{self.description}"
+    def to_file_string(self) -> str:
+        return f"{self._event_id},{self._date},{self._time},{self._description}"
 
     @staticmethod
-    def from_string(event_str):
-        """Creates an Event object from a string."""
-        parts = event_str.strip().split(',')
+    def from_file_string(line: str) -> 'Event':
+        parts = line.strip().split(',')
         if len(parts) != 4:
-            raise ValueError("Invalid event string format.")
+            raise ValueError("Invalid format for Event data.")
         return Event(parts[0], parts[1], parts[2], parts[3])
-    
-    def __str__(self):
-        return (f"Event ID: {self.event_id}, Time: {self.time}, Date: {self.date}, "
-                f"Description: {self.description}, Participants: {self.participant_count}")
+
+    def __str__(self) -> str:
+        return (f"Event {self._event_id}: {self._description} "
+                f"on {self._date} at {self._time} ({self._participant_count} attending)")

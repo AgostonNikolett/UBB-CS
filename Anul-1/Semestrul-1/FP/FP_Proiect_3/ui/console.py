@@ -1,28 +1,26 @@
 class UI:
-    def __init__(self, person_menu, event_menu, participant_menu):
-        self.person_menu = person_menu
-        self.event_menu = event_menu
-        self.participant_menu = participant_menu
-
-    def print_main_menu(self):
-        print("\nMain Menu")
-        print("1. Person Management")
-        print("2. Event Management")
-        print("3. Participant Management")
-        print("Q. Quit")
+    def __init__(self, person_menu, event_menu, reg_menu):
+        self._person_menu = person_menu
+        self._event_menu = event_menu
+        self._reg_menu = reg_menu
 
     def start(self):
         while True:
-            self.print_main_menu()
-            option = input("Choose an option: ").lower()
-            if option == "1":
-                self.person_menu.handle_person_menu()
-            elif option == "2":
-                self.event_menu.handle_event_menu()
-            elif option == "3":
-                self.participant_menu.handle_participant_menu()
-            elif option == "q":
-                print("Goodbye!")
+            print("\n=== EVENT MANAGEMENT SYSTEM ===")
+            print("1. Person Management")
+            print("2. Event Management")
+            print("3. Registrations & Reports")
+            print("Q. Exit")
+
+            choice = input("Select category: ").strip().lower()
+            if choice == "1":
+                self._person_menu.handle_menu()
+            elif choice == "2":
+                self._event_menu.handle_menu()
+            elif choice == "3":
+                self._reg_menu.handle_menu()
+            elif choice == "q":
+                print("Exiting application...")
                 break
             else:
-                print("Invalid option. Please try again.")
+                print("Invalid category choice.")

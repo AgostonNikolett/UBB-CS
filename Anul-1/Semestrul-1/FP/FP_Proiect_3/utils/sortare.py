@@ -1,16 +1,47 @@
-from typing import List, Callable, Any, Optional
+from typing import List, Callable, Any
 
-def quick_sort(arr: List[Any], cmp: Callable[[Any, Any], int]):
-    def _quick_sort(low: int, high: int):
+
+def generic_sort(data: List[Any], method: str = 'quick', key: Callable = lambda x: x, reverse: bool = False) -> List[
+    Any]:
+    """
+    Simplified generic sorting function supporting Quick Sort and Gnome Sort.
+    :param data: The list to be sorted.
+    :param method: Sorting method: 'quick' or 'gnome'[cite: 27, 29].
+    :param key: Function to extract comparison key[cite: 25].
+    :param reverse: If True, sorts in descending order.
+    :return: A new sorted list.
+    """
+
+    def compare(a, b):
+        # Returns -1, 0, or 1 based on comparison
+        return (key(a) > key(b)) - (key(a) < key(b))
+
+    sorted_data = data[:]  # Work on a copy to keep the original list intact
+
+    if method == 'quick':
+        sorted_data = _quick_sort(sorted_data, compare)
+    elif method == 'gnome':
+        sorted_data = _gnome_sort(sorted_data, compare)
+    else:
+        raise ValueError("Invalid sorting method. Choose 'quick' or 'gnome'.")
+
+    if reverse:
+        sorted_data.reverse()
+    return sorted_data
+
+
+def _quick_sort(arr: List[Any], cmp: Callable) -> List[Any]:
+    """Quick Sort implementation with in-place partitioning[cite: 25]."""
+
+    def _recursive_inner(low, high):
         if low < high:
-            pivot_index = partition(low, high)
-            _quick_sort(low, pivot_index - 1)
-            _quick_sort(pivot_index + 1, high)
+            pivot_idx = _partition(low, high)
+            _recursive_inner(low, pivot_idx - 1)
+            _recursive_inner(pivot_idx + 1, high)
 
-    def partition(low: int, high: int) -> int:
+    def _partition(low, high):
         pivot = arr[high]
         i = low - 1
-
         for j in range(low, high):
             if cmp(arr[j], pivot) < 0:
                 i += 1
@@ -18,19 +49,12 @@ def quick_sort(arr: List[Any], cmp: Callable[[Any, Any], int]):
         arr[i + 1], arr[high] = arr[high], arr[i + 1]
         return i + 1
 
-    arr_copy = arr[:]
-    _quick_sort(0, len(arr_copy) - 1)
-    return arr_copy
+    _recursive_inner(0, len(arr) - 1)
+    return arr
 
 
-
-def gnome_sort(arr: List[Any], cmp: Callable[[Any, Any], int]):
-    """
-    Gnome Sort works by comparing the current element with the previous one.
-    If they are in the correct order, it moves to the next element.
-    If not, it swaps them and moves back one step.
-    This process continues until the entire list is sorted
-    """
+def _gnome_sort(arr: List[Any], cmp: Callable) -> List[Any]:
+    """Gnome Sort implementation. Complexity: O(n) to O(n^2)."""
     index = 0
     while index < len(arr):
         if index == 0 or cmp(arr[index], arr[index - 1]) >= 0:
@@ -39,27 +63,3 @@ def gnome_sort(arr: List[Any], cmp: Callable[[Any, Any], int]):
             arr[index], arr[index - 1] = arr[index - 1], arr[index]
             index -= 1
     return arr
-
-
-def generic_sort(data: List[Any], method: str = 'quick', key: Callable[[Any], Any] = lambda x: x, reversed: bool = False) -> List[Any]:
-    """
-    Simplified generic sorting function supporting Quick Sort and Gnome Sort.
-    Parameters:
-        data: List[Any] -> list to be sorted
-        method: str -> sorting method: 'quick' or 'gnome'
-        key: Callable -> function to extract comparison key
-        reversed: bool -> if True, sorts in descending order
-    """
-    def cmp(a, b):
-        return (key(a) > key(b)) - (key(a) < key(b))
-
-    if method == 'quick':
-        sorted_data = quick_sort(data[:], cmp)
-    elif method == 'gnome':
-        sorted_data = gnome_sort(data[:], cmp)
-    else:
-        raise ValueError("Invalid method. Choose 'quick' or 'gnome'.")
-
-    if reversed:
-        sorted_data.reverse()
-    return sorted_data

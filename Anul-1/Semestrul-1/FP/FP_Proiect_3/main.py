@@ -1,82 +1,57 @@
-from service.service_person import PersonService
-from service.service_event import EventService
-from service.service_participant import ParticipantService
+from repository.event_repository import EventFileRepository
+from repository.participant_repository import ParticipantFileRepository
+from repository.base_repository import InMemoryRepository
+from repository.person_repository import PersonFileRepository
 
-from repository.repo_person import PersonRepository
-from repository.repo_event import EventRepository
-from repository.repo_participant import ParticipantRepository
+from validators.person_validator import PersonValidator
+from validators.event_validator import EventValidator
+from validators.registration_validator import RegistrationValidator
 
-from repository.file_repo_person import PersonFileRepository
-from repository.file_repo_event import EventFileRepository
-from repository.file_repo_participant import ParticipantFileRepository
+from service.person_service import PersonService
+from service.event_service import EventService
+from service.registration_service import RegistrationService
 
-from validator.validator_person import PersonValidator
-from validator.validator_event import EventValidator
-from validator.validator_participant import ParticipantValidator
 from ui.console_person import PersonMenu
 from ui.console_event import EventMenu
-from ui.console_participant import ParticipantMenu
+from ui.console_registration import RegistrationMenu
 from ui.console import UI
-import unittest
 
-def run_all_tests():
-    print("Running all tests...")
-    # Discover and run all tests in the 'tests' directory
-    loader = unittest.TestLoader()
-    suite = loader.discover('tests') 
-    runner = unittest.TextTestRunner(verbosity=2)
-    result = runner.run(suite)
-    if result.wasSuccessful():
-        print("All tests passed successfully!\n")
+
+def initialize_app():
+    print("Welcome! Select Storage Mode:")
+    print("1. In-Memory (Session only)")
+    print("2. File Persistent (Saves to .txt)")
+
+    choice = input("Choice: ").strip()
+
+    if choice == "2":
+        person_repo = PersonFileRepository("data/persons.txt")
+        event_repo = EventFileRepository("data/events.txt")
+        part_repo = ParticipantFileRepository("data/registrations.txt")
     else:
-        print(f"Some tests failed. Total Failures: {len(result.failures)}\n")
+        print("Running in Memory Mode...")
+        person_repo = InMemoryRepository()
+        event_repo = InMemoryRepository()
+        part_repo = ParticipantFileRepository("data/temp.txt")
 
-def print_main_menu():
-    print("\nModel repository")
-    print("1. In Memori Repository")        
-    print("2. File Repository")
-    print("Q. Quit")
+    # Validators
+    p_val = PersonValidator()
+    e_val = EventValidator()
+    r_val = RegistrationValidator()
 
-def main():
-    # Run tests before starting the UI
-    run_all_tests()
-    
-    # Initialize repositories
-    print_main_menu()
-    option = input("Choose an option: ").lower()
-    
-    if option == "1":
-        person_repo = PersonRepository()
-        event_repo = EventRepository()
-        participant_repo = ParticipantRepository()
-        
-    elif option == "2":
-        person_repo = PersonFileRepository("data/person_file.txt")
-        event_repo = EventFileRepository("data/event_file.txt")
-        participant_repo = ParticipantFileRepository("data/participant_file.txt")
+    # Services
+    p_service = PersonService(person_repo, p_val)
+    e_service = EventService(event_repo, e_val)
+    r_service = RegistrationService(part_repo, person_repo, event_repo, r_val)
 
-    # Initialize validators
-    person_val = PersonValidator()
-    event_val = EventValidator()
-    participant_val = ParticipantValidator()
-    
-    # Initialize services
-    person_service = PersonService(person_repo, person_val)
-    event_service = EventService(event_repo, event_val)
-    participant_service = ParticipantService(participant_repo, person_repo, event_repo, participant_val)
-    
-    # Initialize console
-    person_menu = PersonMenu(person_service)
-    event_menu = EventMenu(event_service)
-    participant_menu = ParticipantMenu(participant_service)
-    
-    # Initialize UI
-    ui = UI(person_menu, event_menu, participant_menu)
-    
-    # Start the application
-    ui.start()
-    
+    # UI Layers
+    p_menu = PersonMenu(p_service)
+    e_menu = EventMenu(e_service)
+    r_menu = RegistrationMenu(r_service)
+
+    return UI(p_menu, e_menu, r_menu)
+
 
 if __name__ == "__main__":
-    main()
-    
+    app = initialize_app()
+    app.start()
