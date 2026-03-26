@@ -8,7 +8,7 @@ class Participant:
     def get_person_id(self):
         return self.person_id
 
-    # Getter method to retrieve the events's ID
+    # Getter method to retrieve the event's ID
     def get_event_id(self):
         return self.event_id
 

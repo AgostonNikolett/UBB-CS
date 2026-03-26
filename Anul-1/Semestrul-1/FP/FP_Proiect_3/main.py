@@ -51,9 +51,9 @@ def main():
         participant_repo = ParticipantRepository()
         
     elif option == "2":
-        person_repo = PersonFileRepository("person_file.txt")
-        event_repo = EventFileRepository("event_file.txt")
-        participant_repo = ParticipantFileRepository("participant_file.txt")
+        person_repo = PersonFileRepository("data/person_file.txt")
+        event_repo = EventFileRepository("data/event_file.txt")
+        participant_repo = ParticipantFileRepository("data/participant_file.txt")
 
     # Initialize validators
     person_val = PersonValidator()

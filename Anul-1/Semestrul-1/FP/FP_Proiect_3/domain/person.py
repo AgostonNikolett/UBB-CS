@@ -31,7 +31,7 @@ class Person:
 
     @staticmethod
     def from_string(person_str):
-        """Creates an Person object from a string."""
+        """Creates a Person object from a string."""
         parts = person_str.strip().split(',')
         if len(parts) != 3:
             raise ValueError("Invalid person string format.")

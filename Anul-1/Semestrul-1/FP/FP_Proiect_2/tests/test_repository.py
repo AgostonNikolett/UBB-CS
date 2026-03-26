@@ -1,7 +1,6 @@
 import unittest
 from datetime import datetime
 
-from domain.travel_package import get_id
 from repository.package_operations import (
     add_package_to_list, get_package_by_id, update_package_service,
     delete_package_by_id, delete_packages_by_destination, delete_packages_by_price

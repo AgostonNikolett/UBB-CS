@@ -7,7 +7,7 @@ class Event:
         self.date = date
         self.time = time
         self.description = description
-        self.participant_count = 0  # New attribute to track the number of participants
+        self.participant_count = 0
 
     # Getter method to retrieve the event's ID
     def get_event_id(self):
